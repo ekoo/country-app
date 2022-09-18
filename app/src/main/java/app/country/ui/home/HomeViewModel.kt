@@ -5,11 +5,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.country.enum.Continent
-import app.country.enum.Filter
+import app.country.db.CountryDao
+import app.country.state.Continent
+import app.country.state.Filter
 import app.country.model.Country
 import app.country.model.Response
-import app.country.model.Status
+import app.country.state.Status
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
@@ -19,16 +20,15 @@ import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
-import io.ktor.util.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
-class HomeViewModel : ViewModel() {
+class HomeViewModel(
+    private val db: CountryDao
+) : ViewModel() {
 
     private val client = HttpClient(CIO) {
         defaultRequest {
@@ -59,6 +59,7 @@ class HomeViewModel : ViewModel() {
 
     private val _countries = MutableLiveData<List<Country>>()
     val countries: LiveData<List<Country>> get() = _countries
+    val favoriteCountries get() = db.favoriteCountries()
 
     var filter = Filter.COUNTRY
     val selectedContinent = mutableListOf(
@@ -111,6 +112,32 @@ class HomeViewModel : ViewModel() {
         }
 
         return "{\"query\":\"{ countries { code name continent { name } } }\"}"
+    }
+
+    fun saveCountry(country: Country, status: (String) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            var message = "Success added ${country.name} to favorite"
+            try {
+                if (db.addFavorite(country) < 1) message = "Already added to favorite"
+            } catch (e: Exception) {
+                message = e.message ?: ""
+            }
+
+            withContext(Dispatchers.Main) { status(message) }
+        }
+    }
+
+    fun deleteCountry(country: Country, status: (String) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            var message = "${country.name} removed from favorite"
+            try {
+                if (db.deleteFavorite(country) < 1) message = "Already removed"
+            } catch (e: Exception) {
+                message = e.message ?: ""
+            }
+
+            withContext(Dispatchers.Main) { status(message) }
+        }
     }
 
     init {

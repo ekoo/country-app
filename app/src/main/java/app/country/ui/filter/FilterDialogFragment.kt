@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import app.country.R
 import app.country.databinding.FragmentDialogFilterBinding
-import app.country.enum.Continent
-import app.country.enum.Filter
+import app.country.state.Continent
+import app.country.state.Filter
 import app.country.ui.home.HomeViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.androidx.navigation.koinNavGraphViewModel

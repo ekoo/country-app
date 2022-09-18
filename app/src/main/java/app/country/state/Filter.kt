@@ -1,4 +1,4 @@
-package app.country.enum
+package app.country.state
 
 import androidx.annotation.IdRes
 import app.country.R

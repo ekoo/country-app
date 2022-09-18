@@ -1,18 +1,17 @@
 package app.country.ui.home
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.country.R
 import app.country.databinding.FragmentHomeBinding
-import app.country.model.Status
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import app.country.state.Status
 import org.koin.androidx.navigation.koinNavGraphViewModel
 
 class HomeFragment : Fragment() {
@@ -37,16 +36,19 @@ class HomeFragment : Fragment() {
             findNavController().navigate(R.id.action_navigation_home_to_filterDialogFragment)
         }
 
-        viewModel.status.observe(viewLifecycleOwner) { status ->
-            binding.progressBar.isVisible = status == Status.LOADING
-        }
         val countryAdapter = CountryAdapter {
-
+            viewModel.saveCountry(it) { msg ->
+                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+            }
         }
 
         binding.countriesRv.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = countryAdapter
+        }
+
+        viewModel.status.observe(viewLifecycleOwner) { status ->
+            binding.progressBar.isVisible = status == Status.LOADING
         }
 
         viewModel.countries.observe(viewLifecycleOwner) {
