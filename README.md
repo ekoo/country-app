@@ -6,7 +6,7 @@ This app use MVVM Design Pattern, [Navigation Component](https://developer.andro
 ## Third party Library
 
 - [Ktor](https://ktor.io/) - HTTP Client
-- [Koin](https://https://insert-koin.io/) - Dependency Injection
+- [Koin](https://insert-koin.io/) - Dependency Injection
 
 ## How To Run
 ```console
