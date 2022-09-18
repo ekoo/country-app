@@ -5,11 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.country.R
 import app.country.databinding.FragmentFavoriteBinding
-import app.country.ui.home.CountryAdapter
+import app.country.ui.adapter.CountryAdapter
 import app.country.ui.home.HomeViewModel
 import org.koin.androidx.navigation.koinNavGraphViewModel
 
@@ -44,6 +45,7 @@ class FavoriteFragment : Fragment() {
 
         viewModel.favoriteCountries.observe(viewLifecycleOwner) {
             countryAdapter.submitList(it)
+            binding.emptyMessage.isVisible = it.isEmpty()
         }
     }
 

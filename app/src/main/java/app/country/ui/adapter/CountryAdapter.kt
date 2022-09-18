@@ -1,4 +1,4 @@
-package app.country.ui.home
+package app.country.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

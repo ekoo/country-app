@@ -55,7 +55,7 @@ class HomeViewModel(
 
     private val _status = MutableLiveData<Status>()
     val status: LiveData<Status> get() = _status
-    var errorMessage: String? = null
+    var errorMessage: String? = "Error while fetch data"
 
     private val _countries = MutableLiveData<List<Country>>()
     val countries: LiveData<List<Country>> get() = _countries
@@ -76,7 +76,7 @@ class HomeViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _status.postValue(Status.LOADING)
-                delay(100)
+                delay(100L)
                 val response = client.post() {
                     contentType(ContentType.Application.Json)
                     setBody(requestBody())
@@ -98,7 +98,6 @@ class HomeViewModel(
                 _status.postValue(Status.SUCCESS)
                 errorMessage = null
             } catch (e: Exception) {
-                errorMessage = e.message
                 _status.postValue(Status.ERROR)
             }
         }
@@ -110,7 +109,6 @@ class HomeViewModel(
             val query = "{ countries( filter: { continent: { in: $continents } } ) { code name continent { name } } }"
             return "{\"query\":${query.escapeIfNeeded()}}"
         }
-
         return "{\"query\":\"{ countries { code name continent { name } } }\"}"
     }
 
